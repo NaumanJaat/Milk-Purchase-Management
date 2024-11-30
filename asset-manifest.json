@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/milk-tracker/static/css/main.f932e2f1.css",
-    "main.js": "/milk-tracker/static/js/main.03265083.js",
-    "static/js/453.196f1d12.chunk.js": "/milk-tracker/static/js/453.196f1d12.chunk.js",
-    "index.html": "/milk-tracker/index.html",
-    "main.f932e2f1.css.map": "/milk-tracker/static/css/main.f932e2f1.css.map",
-    "main.03265083.js.map": "/milk-tracker/static/js/main.03265083.js.map",
-    "453.196f1d12.chunk.js.map": "/milk-tracker/static/js/453.196f1d12.chunk.js.map"
+    "main.css": "/Milk-Purchase-Management/static/css/main.f932e2f1.css",
+    "main.js": "/Milk-Purchase-Management/static/js/main.5a633d27.js",
+    "static/js/453.196f1d12.chunk.js": "/Milk-Purchase-Management/static/js/453.196f1d12.chunk.js",
+    "index.html": "/Milk-Purchase-Management/index.html",
+    "main.f932e2f1.css.map": "/Milk-Purchase-Management/static/css/main.f932e2f1.css.map",
+    "main.5a633d27.js.map": "/Milk-Purchase-Management/static/js/main.5a633d27.js.map",
+    "453.196f1d12.chunk.js.map": "/Milk-Purchase-Management/static/js/453.196f1d12.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f932e2f1.css",
-    "static/js/main.03265083.js"
+    "static/js/main.5a633d27.js"
   ]
 }
