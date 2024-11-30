@@ -1,0 +1,44 @@
+.entry-list {
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .entry-list h4 {
+    color: #4caf50;
+    margin-bottom: 10px;
+  }
+  
+  .entry-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    margin: 5px 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .entry-item span {
+    font-size: 1rem;
+  }
+  
+  .entry-date {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .entry-quantity {
+    color: #666;
+    font-style: italic;
+  }
+  
+  .no-entries {
+    font-size: 1rem;
+    color: #999;
+    margin: 20px 0;
+  }
+  
