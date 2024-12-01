@@ -1,135 +1,159 @@
 import React, { useState, useEffect } from "react";
-import { ref, set, remove, onValue, get } from "firebase/database";
-import database from "../firebase"; // Your Firebase configuration
+import database from "../firebase"; // Update the path to your Firebase configuration
+import { ref, set, get, remove, onValue } from "firebase/database";
 
 const AddUser = () => {
-  const [userId, setUserId] = useState("");
-  const [userName, setUserName] = useState("");
-  const [pricePerLiter, setPricePerLiter] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [password, setPassword] = useState("");
+  const [actionPassword, setActionPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [actionName, setActionName] = useState("");
   const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState(""); // For displaying messages
-  const [isSuccess, setIsSuccess] = useState(false); // To control success/error styling
 
-  // Fetch users from Firebase on component mount
+  // Fetch users and listen for changes
   useEffect(() => {
     const usersRef = ref(database, "users");
-    onValue(usersRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const usersArray = Object.keys(data).map((key) => ({
-          id: key,
+    const unsubscribe = onValue(usersRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const userList = Object.keys(data).map((key) => ({
+          name: key,
           ...data[key],
         }));
-        setUsers(usersArray);
+        setUsers(userList);
+      } else {
+        setUsers([]);
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
-  // Handle adding a new user
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // Convert pricePerLiter to a number
-    const price = parseFloat(pricePerLiter);
-    
-    // Validate the input
-    if (isNaN(price)) {
-      setMessage("Please enter a valid price.");
-      setIsSuccess(false);
+  // Function to add a user
+  const addUserHandler = () => {
+    if (!name || !price || !password) {
+      setMessage("Please fill all fields for adding a user.");
       return;
     }
 
-    // Check if the user already exists in Firebase
-    const userRef = ref(database, `users/${userId}`);
+    const userRef = ref(database, `users/${name}`);
     get(userRef).then((snapshot) => {
       if (snapshot.exists()) {
-        setMessage("Error: User already exists! Use other ID");
-        setIsSuccess(false); // Set to error styling
+        setMessage("User already exists.");
       } else {
-        // Store user data with the price
-        set(userRef, {
-          name: userName,
-          pricePerLiter: price,  // Storing the price as a number
-        })
-        .then(() => {
-          setMessage("User added successfully!");
-          setIsSuccess(true); // Set to success styling
-          setUserId("");
-          setUserName("");
-          setPricePerLiter("");
-        })
-        .catch((error) => {
-          setMessage("Error adding user: " + error.message);
-          setIsSuccess(false);
-        });
+        set(userRef, { price: Number(price), password })
+          .then(() => {
+            setMessage(`User ${name} added successfully!`);
+            setName("");
+            setPrice("");
+            setPassword("");
+          })
+          .catch((error) => {
+            setMessage(`Error adding user: ${error.message}`);
+          });
       }
     });
   };
 
-  // Handle removing a user
-  const handleRemoveUser = (userId) => {
-    const userRef = ref(database, `users/${userId}`);
-    remove(userRef)
-      .then(() => {
-        setMessage("User removed successfully!");
-        setIsSuccess(true);
+  // Function to remove a user
+  const removeUserHandler = () => {
+    if (!actionName || !actionPassword) {
+      setMessage("Please enter the name and password for removing a user.");
+      return;
+    }
+
+    const userRef = ref(database, `users/${actionName}`);
+    get(userRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const userData = snapshot.val();
+          if (userData.password === actionPassword) {
+            remove(userRef)
+              .then(() => {
+                setMessage(`User ${actionName} removed successfully!`);
+                setActionName("");
+                setActionPassword("");
+              })
+              .catch((error) => {
+                setMessage(`Error removing user: ${error.message}`);
+              });
+          } else {
+            setMessage("Incorrect password. User not removed.");
+          }
+        } else {
+          setMessage("User not found.");
+        }
       })
       .catch((error) => {
-        setMessage("Error removing user: " + error.message);
-        setIsSuccess(false);
+        setMessage(`Error: ${error.message}`);
       });
   };
 
   return (
     <div>
-      <h2>Add New User</h2>
-      <form onSubmit={handleSubmit}>
+      <h2>User Management</h2>
+
+      {/* Add User Section */}
+      <div style={{ marginBottom: "20px" }}>
+        <h3>Add User</h3>
         <input
           type="text"
-          placeholder="User ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="User Name"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          required
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Price per Liter"
-          value={pricePerLiter}
-          onChange={(e) => setPricePerLiter(e.target.value)}
-          required
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
         />
-        <button type="submit">Add User</button>
-      </form>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button onClick={addUserHandler}>Add User</button>
+      </div>
 
-      {/* Display message */}
-      {message && (
-        <div className={`message ${isSuccess ? 'success' : 'error'}`}>
-          {message}
-        </div>
-      )}
-
-      <h3>Existing Users</h3>
+      {/* Remove User Section */}
       <div>
-        {users.length === 0 ? (
-          <p>No users available.</p>
+        <h3>Remove User</h3>
+        <input
+          type="text"
+          placeholder="Name"
+          value={actionName}
+          onChange={(e) => setActionName(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={actionPassword}
+          onChange={(e) => setActionPassword(e.target.value)}
+        />
+        <button onClick={removeUserHandler}>Remove User</button>
+      </div>
+
+      {/* User List */}
+      <div style={{ marginTop: "20px" }}>
+        <h3>User List</h3>
+        {users.length > 0 ? (
+          <ul>
+            {users.map((user) => (
+              <li key={user.name}>
+                <strong>{user.name}</strong> - Price: {user.price}
+              </li>
+            ))}
+          </ul>
         ) : (
-          users.map((user) => (
-            <div key={user.id} className="user-card">
-              <p>{user.name}</p>
-              <p>{user.id}</p>
-              <p>Price per Liter: {user.pricePerLiter} PKR</p>
-              <button onClick={() => handleRemoveUser(user.id)} className="remove-btn">Remove User</button>
-            </div>
-          ))
+          <p>No users found.</p>
         )}
       </div>
+
+      {/* Message Display */}
+      <p style={{ marginTop: "20px", color: "blue" }}>{message}</p>
     </div>
   );
 };
