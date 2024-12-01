@@ -1,58 +1,35 @@
-import React, { useState, useEffect } from "react";
-import  database  from "../firebase"; // Adjust the path if necessary
+import React, { useState } from "react";
 import { ref, get, push } from "firebase/database";
+import database from "../firebase";
 
 const AddMilkEntry = () => {
-  const [userName, setUserName] = useState("");
-  const [milkAmount, setMilkAmount] = useState("");
+  const [userId, setUserId] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [date, setDate] = useState("");
-  const [users, setUsers] = useState([]);
-  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Fetch users from Firebase
-  useEffect(() => {
-    const usersRef = ref(database, "users");
-    get(usersRef).then((snapshot) => {
+  const addEntryHandler = () => {
+    const userRef = ref(database, `users/${userId}`);
+
+    // Check if the user exists
+    get(userRef).then((snapshot) => {
       if (snapshot.exists()) {
-        const userData = Object.keys(snapshot.val());
-        setUsers(userData);
+        // User exists, proceed with adding milk entry
+        push(ref(database, `users/${userId}/entries`), {
+          date,
+          quantity: parseFloat(quantity),
+        }).then(() => {
+          alert("Milk entry added successfully!");
+          setUserId("");
+          setQuantity("");
+          setDate("");
+          setErrorMessage(""); // Clear error message if entry is successful
+        });
       } else {
-        setUsers([]);
+        // User does not exist, show an error message
+        setErrorMessage("User not found! Please check the User ID.");
       }
     });
-  }, []);
-
-  // Function to add milk entry
-  const addMilkEntryHandler = () => {
-    if (!userName || !milkAmount || !date) {
-      setMessage("Please fill in all fields.");
-      return;
-    }
-
-    if (users.length === 0) {
-      setMessage("No users available. Please add a user first.");
-      return;
-    }
-
-    if (!users.includes(userName)) {
-      setMessage("User does not exist. Please check the name.");
-      return;
-    }
-
-    const milkEntryRef = ref(database, `milkEntries/${userName}`);
-    push(milkEntryRef, {
-      date,
-      amount: Number(milkAmount),
-    })
-      .then(() => {
-        setMessage("Milk entry added successfully!");
-        setUserName("");
-        setMilkAmount("");
-        setDate("");
-      })
-      .catch((error) => {
-        setMessage(`Error adding milk entry: ${error.message}`);
-      });
   };
 
   return (
@@ -61,23 +38,24 @@ const AddMilkEntry = () => {
       <input
         type="text"
         placeholder="User Name"
-        value={userName}
-        onChange={(e) => setUserName(e.target.value)}
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
       />
       <input
         type="number"
-        placeholder="Milk Amount (liters)"
-        value={milkAmount}
-        onChange={(e) => setMilkAmount(e.target.value)}
+        placeholder="Quantity (liters)"
+        value={quantity}
+        onChange={(e) => setQuantity(e.target.value)}
       />
       <input
         type="date"
-        placeholder="Date"
         value={date}
         onChange={(e) => setDate(e.target.value)}
       />
-      <button onClick={addMilkEntryHandler}>Add Milk Entry</button>
-      <p style={{ color: "blue", marginTop: "20px" }}>{message}</p>
+      <button onClick={addEntryHandler}>Add Entry</button>
+
+      {/* Display error message if user is not found */}
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };

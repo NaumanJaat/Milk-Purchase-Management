@@ -4,7 +4,6 @@ import { ref, set, get, remove, onValue } from "firebase/database";
 
 const AddUser = () => {
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("");
   const [password, setPassword] = useState("");
   const [actionPassword, setActionPassword] = useState("");
   const [message, setMessage] = useState("");
@@ -32,7 +31,7 @@ const AddUser = () => {
 
   // Function to add a user
   const addUserHandler = () => {
-    if (!name || !price || !password) {
+    if (!name || !password) {
       setMessage("Please fill all fields for adding a user.");
       return;
     }
@@ -42,11 +41,10 @@ const AddUser = () => {
       if (snapshot.exists()) {
         setMessage("User already exists.");
       } else {
-        set(userRef, { price: Number(price), password })
+        set(userRef, { password })
           .then(() => {
             setMessage(`User ${name} added successfully!`);
             setName("");
-            setPrice("");
             setPassword("");
           })
           .catch((error) => {
@@ -104,12 +102,6 @@ const AddUser = () => {
           onChange={(e) => setName(e.target.value)}
         />
         <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-        <input
           type="password"
           placeholder="Password"
           value={password}
@@ -143,7 +135,7 @@ const AddUser = () => {
           <ul>
             {users.map((user) => (
               <li key={user.name}>
-                <strong>{user.name}</strong> - Price: {user.price}
+                <strong>{user.name}</strong>
               </li>
             ))}
           </ul>
