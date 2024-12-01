@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Milk-Purchase-Management/static/css/main.f932e2f1.css",
-    "main.js": "/Milk-Purchase-Management/static/js/main.1a4df187.js",
+    "main.js": "/Milk-Purchase-Management/static/js/main.77b55ddf.js",
     "static/js/453.196f1d12.chunk.js": "/Milk-Purchase-Management/static/js/453.196f1d12.chunk.js",
     "index.html": "/Milk-Purchase-Management/index.html",
     "main.f932e2f1.css.map": "/Milk-Purchase-Management/static/css/main.f932e2f1.css.map",
-    "main.1a4df187.js.map": "/Milk-Purchase-Management/static/js/main.1a4df187.js.map",
+    "main.77b55ddf.js.map": "/Milk-Purchase-Management/static/js/main.77b55ddf.js.map",
     "453.196f1d12.chunk.js.map": "/Milk-Purchase-Management/static/js/453.196f1d12.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f932e2f1.css",
-    "static/js/main.1a4df187.js"
+    "static/js/main.77b55ddf.js"
   ]
 }
